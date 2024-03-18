@@ -26,7 +26,7 @@ async def root():
 
 @app.post("/webhook")
 async def webhook(data: str = Body(), secret: str = Query(None)):
-    if os.environ["client_secret"] != secret: return {"nice1"}
+    if os.environ["client_secret"] != secret: return {"nice"}
 
     print(session.get_positions(category="linear", symbol="BTCUSDT"))
 
