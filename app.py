@@ -11,7 +11,7 @@ app = FastAPI()
 session = HTTP(
     api_key=os.environ["api_key"],
     api_secret=os.environ["api_secret"],
-    testnet=True,
+    testnet=False,
 )
 
 
@@ -27,6 +27,7 @@ async def root():
 @app.post("/webhook")
 async def webhook(data: str = Body()):
     print(session.get_positions(category="linear", symbol="BTCUSDT"))
+    
     print("webhook")
     print(data)
     return {"nice"}
