@@ -131,6 +131,21 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
         slTriggerBy='Market'
     )
 
+    print(resp)
+
+    resp = session.place_order(
+        category='linear',
+        symbol=symbol,
+        side='Buy' if side == "SHORT" else 'Sell',
+        orderType='Limit',
+        qty=dorder_qty*0.4,
+        closeOnTrigger=true,
+        timeInForce="PostOnly",
+        positionIdx=0,
+        price=tp1)
+    
+    print(resp)
+
     """
 
     resp = session.set_leverage(
