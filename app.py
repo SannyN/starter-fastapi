@@ -47,7 +47,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     if os.environ["client_secret"] != secret: return {"nice"}
 
     positions = session.get_positions(category=category, symbol=symbol)
-    console.log(positions)
+    print(positions)
 
     if "list" in positions:
         print("Cancel all active orders & positions")
