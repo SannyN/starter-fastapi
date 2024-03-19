@@ -81,7 +81,8 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
 
     webhookData = json.loads(data)
 
-    leverage = 37.5
+    leverage = 25
+    amount = 0.01
 
     side = webhookData["side"]
     entry = decimal.Decimal(webhookData["entry"])
@@ -111,6 +112,16 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
 
     print("Cancel all active orders & positions")
     Helpers(session).close_position(category=category, symbol=symbol)
+
+    resp = session.switch_margin_mode(
+        category='linear',
+        symbol=symbol,
+        tradeMode=mode,
+        buyLeverage=leverage,
+        sellLeverage=leverage
+    )
+
+    print(resp)
 
     print(data)
     return {"nice"}
