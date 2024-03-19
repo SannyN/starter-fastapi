@@ -23,12 +23,34 @@ class Item(BaseModel):
 async def root():
     return {"message": "Hello World"}
 
+symbol="BTCUSDT"
+category="linear"
+
+# Changing mode and leverage: 
+def set_mode():
+    try:
+        resp = session.switch_margin_mode(
+            category='linear',
+            symbol=symbol,
+            tradeMode=mode,
+            buyLeverage=leverage,
+            sellLeverage=leverage
+        )
+        print(resp)
+    except Exception as err:
+        print(err)
+
 
 @app.post("/webhook")
 async def webhook(data: str = Body(), secret: str = Query(None)):
     if os.environ["client_secret"] != secret: return {"nice"}
 
-    print(session.get_positions(category="linear", symbol="BTCUSDT"))
+    positions = session.get_positions(category=category, symbol=symbol)
+
+    """ if positions["list"]:
+        print("Cancel all active orders")
+        session.cancel_all_orders(category=category, settleCoin="USDT")
+        session.close_position(category=category, symbol=symbol) """
 
     print("webhook")
     print(data)
