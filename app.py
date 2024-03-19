@@ -85,8 +85,9 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
 
     webhookData = json.loads(data)
 
-    leverage = "25"
+    leverage = "17.5"
     order_qty = "0.01"
+    dorder_qty = 0.01
 
     side = webhookData["side"]
     entry = webhookData["entry"]
@@ -111,14 +112,26 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
         print("Winrate low")
         return {"nice"}
 
-    if distance > 2:
+    if distance > 2.2:
         print("distance to high")
         return {"nice"}
     
 
 
     print("Cancel all active orders & positions")
-    #Helpers(session).close_position(category=category, symbol=symbol)
+    Helpers(session).close_position(category=category, symbol=symbol)
+
+    resp = session.place_order(
+        category='linear',
+        symbol=symbol,
+        side='Buy' if side == "LONG" else 'Sell',
+        orderType='Market',
+        qty=order_qty,
+        stopLoss=stop,
+        slTriggerBy='Market'
+    )
+
+    """
 
     resp = session.set_leverage(
         category=category,
@@ -128,7 +141,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     )
     print(resp)
     
-    """ resp = session.place_order(
+     resp = session.place_order(
                 category='linear',
                 symbol=symbol,
                 side='Buy' if side == "LONG" else 'Sell',
@@ -140,18 +153,64 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     
     # print(resp)
 
-    """ resp = session.place_order(
+    """ 
+    resp = session.place_order(
             category='linear',
             symbol=symbol,
-            side='Buy' if side == "LONG" else 'Sell',
+            side='Buy' if side == "SHORT" else 'Sell',
             orderType='Limit',
-            qty=order_qty,
-            stopLoss=stop,
-            slTriggerBy='Market'
-        )
-        """
+            qty=dorder_qty*0.4,
+            closeOnTrigger=true,
+            timeInForce="PostOnly",
+            positionIdx=0,
+            price=tp1)
+    print(resp)
+
+    resp = session.place_order(
+            category='linear',
+            symbol=symbol,
+            side='Buy' if side == "SHORT" else 'Sell',
+            orderType='Limit',
+            qty=dorder_qty*0.3,
+            closeOnTrigger=true,
+            timeInForce="PostOnly",
+            positionIdx=1,
+            price=tp2)
+
+    print(resp)
+
+    resp = session.place_order(
+            category='linear',
+            symbol=symbol,
+            side='Buy' if side == "SHORT" else 'Sell',
+            orderType='Limit',
+            qty=dorder_qty*0.2,
+            closeOnTrigger=true,
+            timeInForce="PostOnly",
+            positionIdx=2,
+            price=tp3)
+
+    print(resp)
+        
+    resp = session.place_order(
+            category='linear',
+            symbol=symbol,
+            side='Buy' if side == "SHORT" else 'Sell',
+            orderType='Limit',
+            qty=dorder_qty*0.1,
+            closeOnTrigger=true,
+            timeInForce="PostOnly",
+            positionIdx=3,
+            price=tp4)
+
+
+    print(resp)
+
+    resp = session.set_trading_stop(
     
-    #print(resp)
+            )
+    
+    """
 
     print(data)
     return {"nice"}
