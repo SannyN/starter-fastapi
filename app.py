@@ -81,7 +81,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
 
     webhookData = json.loads(data)
 
-    leverage = 25
+    leverage = "25"
     amount = 0.01
 
     side = webhookData["side"]
