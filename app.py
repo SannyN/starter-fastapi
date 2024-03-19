@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Body, Query
 from fastapi.responses import FileResponse
 from pybit.unified_trading import HTTP
+from pybit.helpers import Helpers
 import json
 
 import os
@@ -51,8 +52,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     if len(positions["result"]["list"]) > 0:
         print(positions["result"]["list"])
         print("Cancel all active orders & positions")
-        session.cancel_all_orders(category=category, settleCoin="USDT")
-        session.close_position(category=category, symbol=symbol)
+        Helpers(session).close_position(category=category, symbol=symbol)
 
     print("webhook")
     print(data)
