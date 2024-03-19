@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse
 from pybit.unified_trading import HTTP
 from pybit.helpers import Helpers
 import json
+import decimal
 
 import os
 
@@ -36,7 +37,7 @@ category="linear"
     "tp2": "65092.5",
     "tp3": "65730.7",
     "tp4": "66368.8",
-    "winrate": "52%",
+    "winrate": "52",
     "strategy": "MANUAL",
     "beTargetTrigger": "1",
     "stop": "62810.8"
@@ -50,7 +51,7 @@ category="linear"
     "tp2": "65683.4",
     "tp3": "65013.2",
     "tp4": "64342.9",
-    "winrate": "51.03%",
+    "winrate": "51.03",
     "strategy": "MANUAL",
     "beTargetTrigger": "1",
     "stop": "67864.7"
@@ -76,15 +77,24 @@ def set_mode():
 async def webhook(data: str = Body(), secret: str = Query(None)):
     if os.environ["client_secret"] != secret: return {"nice"}
 
-    positions = session.get_positions(category=category, symbol=symbol)
-    print("positions")
-    print(positions)
+    webhookData = json.loads(data)
 
-    if len(positions["result"]["list"]) > 0:
-        print("Cancel all active orders & positions")
-        print(positions["result"]["list"])
-        Helpers(session).close_position(category=category, symbol=symbol)
+    leverage = 20
 
-    print("webhook")
+    side = webhookData["side"]
+    entry = decimal.Decimal(webhookData["entry"])
+    tp1 = decimal.Decimal(webhookData["tp1"])
+    tp2 = decimal.Decimal(webhookData["tp2"])
+    tp3 = decimal.Decimal(webhookData["tp3"])
+    tp4 = decimal.Decimal(webhookData["tp4"])
+    winrate = decimal.Decimal(webhookData["winrate"])
+    stop = decimal.Decimal(webhookData["stop"])
+
+    print("Winrate")
+    print(winrate)
+
+    print("Cancel all active orders & positions")
+    Helpers(session).close_position(category=category, symbol=symbol)
+
     print(data)
     return {"nice"}
