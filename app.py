@@ -101,6 +101,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     stop = webhookData["stop"]
     dstop = decimal.Decimal(webhookData["stop"])
     distance = (dentry * 100 / dstop if side == "LONG" else dstop * 100 / dentry) - 100
+    trailing = dentry - dstop if side == "LONG" else dstop - dentry
 
 
     print("Winrate")
@@ -145,6 +146,44 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
         price=tp1)
     
     print(resp)
+
+    resp = session.place_order(
+            category='linear',
+            symbol=symbol,
+            side='Buy' if side == "SHORT" else 'Sell',
+            orderType='Limit',
+            qty=dorder_qty*0.3,
+            closeOnTrigger=true,
+            timeInForce="PostOnly",
+            positionIdx=1,
+            price=tp2)
+
+    print(resp)
+
+    resp = session.place_order(
+            category='linear',
+            symbol=symbol,
+            side='Buy' if side == "SHORT" else 'Sell',
+            orderType='Limit',
+            qty=dorder_qty*0.2,
+            closeOnTrigger=true,
+            timeInForce="PostOnly",
+            positionIdx=2,
+            price=tp3)
+
+    print(resp)
+
+    resp = session.set_trading_stop(
+    category=category,
+    symbol=symbol,
+    takeProfit=null,
+    stopLoss=null,
+    tpTriggerBy=null,
+    slTriggerBy=null,
+    trailingStop=str(trailing),
+    activePrice=tp1,
+    positionIdx=3
+    )
 
     """
 
