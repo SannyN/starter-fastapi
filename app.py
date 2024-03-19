@@ -153,7 +153,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
             orderType='Limit',
             qty=dorder_qty*0.3,
             timeInForce="PostOnly",
-            positionIdx=1,
+            positionIdx=0,
             price=tp2)
 
     print(resp)
@@ -165,7 +165,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
             orderType='Limit',
             qty=dorder_qty*0.2,
             timeInForce="PostOnly",
-            positionIdx=2,
+            positionIdx=0,
             price=tp3)
 
     print(resp)
@@ -179,7 +179,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     slTriggerBy=null,
     trailingStop=str(trailing),
     activePrice=tp1,
-    positionIdx=3
+    positionIdx=0
     )
 
     """
