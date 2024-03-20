@@ -92,7 +92,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print("Winrate low")
         return {"nice"}
 
-    if distance > 2.2:
+    if distance > 2.5:
         print("distance to high")
         return {"nice"}
     
