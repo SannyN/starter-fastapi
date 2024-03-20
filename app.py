@@ -74,27 +74,19 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     order_qty = "0.01"
     dorder_qty = 0.01
 
-    side = data["side"]
-    entry = data["entry"]
-    dentry = decimal.Decimal(data["entry"])
-    tp1 = data["tp1"]
-    tp2 = data["tp2"]
-    tp3 = data["tp3"]
-    tp4 = data["tp4"]
-    winrate = data["winrate"]
-    dwinrate = decimal.Decimal(data["winrate"])
-    stop = data["stop"]
-    dstop = decimal.Decimal(data["stop"])
-    distance = (dentry * 100 / dstop if side == "LONG" else dstop * 100 / dentry) - 100
-    trailing = dentry - dstop if side == "LONG" else dstop - dentry
+    dentry = decimal.Decimal(data.entry)
+    dwinrate = decimal.Decimal(data.winrate)
+    dstop = decimal.Decimal(data.stop)
+    distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
+    trailing = dentry - dstop if data.side == "LONG" else dstop - dentry
 
 
     print("Winrate")
-    print(winrate)
+    print(data.winrate)
     print("Distance")
-    print(distance)
+    print(data.distance)
     print("Trailing")
-    print(trailing)
+    print(data.trailing)
 
     if dwinrate < 50:
         print("Winrate low")
@@ -110,10 +102,10 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     resp = session.place_order(
         category='linear',
         symbol=symbol,
-        side='Buy' if side == "LONG" else 'Sell',
+        side='Buy' if data.side == "LONG" else 'Sell',
         orderType='Market',
         qty=order_qty,
-        stopLoss=stop,
+        stopLoss=data.stop,
         slTriggerBy='MarkPrice'
     )
 
@@ -122,36 +114,37 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     resp = session.place_order(
         category='linear',
         symbol=symbol,
-        side='Buy' if side == "SHORT" else 'Sell',
+        side='Buy' if data.side == "SHORT" else 'Sell',
         orderType='Limit',
         qty=dorder_qty*0.4,
         timeInForce="PostOnly",
         positionIdx=0,
-        price=tp1)
+        price=data.tp1
+    )
     
     print(resp)
 
     resp = session.place_order(
             category='linear',
             symbol=symbol,
-            side='Buy' if side == "SHORT" else 'Sell',
+            side='Buy' if data.side == "SHORT" else 'Sell',
             orderType='Limit',
             qty=dorder_qty*0.3,
             timeInForce="PostOnly",
             positionIdx=0,
-            price=tp2)
+            price=data.tp2)
 
     print(resp)
 
     resp = session.place_order(
             category='linear',
             symbol=symbol,
-            side='Buy' if side == "SHORT" else 'Sell',
+            side='Buy' if data.side == "SHORT" else 'Sell',
             orderType='Limit',
             qty=dorder_qty*0.2,
             timeInForce="PostOnly",
             positionIdx=0,
-            price=tp3)
+            price=data.tp3)
 
     print(resp)
 
@@ -159,7 +152,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     category=category,
     symbol=symbol,
     trailingStop=str(trailing),
-    activePrice=tp1,
+    activePrice=data.tp1,
     positionIdx=0
     )
 
