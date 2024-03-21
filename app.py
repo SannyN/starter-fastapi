@@ -119,7 +119,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         qty=dorder_qty*0.4,
         timeInForce="PostOnly",
         positionIdx=0,
-        price=data.tp1
+        price=data.tp1,
+        reduceOnly=True
     )
     
     print(resp)
@@ -132,7 +133,9 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             qty=dorder_qty*0.3,
             timeInForce="PostOnly",
             positionIdx=0,
-            price=data.tp2)
+            price=data.tp2,
+            reduceOnly=True
+    )
 
     print(resp)
 
@@ -144,7 +147,9 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             qty=dorder_qty*0.2,
             timeInForce="PostOnly",
             positionIdx=0,
-            price=data.tp3)
+            price=data.tp3,
+            reduceOnly=True
+    )
 
     print(resp)
 
