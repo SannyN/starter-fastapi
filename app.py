@@ -60,12 +60,19 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     # Calculate leverage based on the stoploss percentage
     leverage = decimal.Decimal(100 / (stoploss_percent * 10))  # Formula for linear contracts
+    print("leverage")
+    print(leverage)
+
 
     # Calculate order quantity based on balance, stoploss percentage, and leverage
     order_qty = calculate_order_qty(balance, stoploss_percent, leverage)
+    print("order_qty")
+    print(order_qty)
 
     # Calculate actual leverage based on the calculated order quantity
     actual_leverage = calculate_leverage(balance, order_qty, stoploss_percent)
+    print("actual_leverage")
+    print(actual_leverage)
 
     dentry = decimal.Decimal(data.entry)
     dwinrate = decimal.Decimal(data.winrate)
@@ -80,6 +87,10 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     if distance > 3:
         print("Distance too high")
         return {"message": "Distance too high"}
+
+    print(balance)
+
+    return {"message": "What"}
 
     print("Cancel all active orders & positions")
     Helpers(session).close_position(category=category, symbol=symbol)
