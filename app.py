@@ -53,7 +53,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
                         coin="USDT",
                     )
     print(walletBalance)
-    if walletBalance["retMsg"] == "ok":
+    if walletBalance["retMsg"] == "OK":
         balance = decimal.Decimal(walletBalance["result"]["list"][0]["totalAvailableBalance"])
     else:
         print("Failed to get account info")
