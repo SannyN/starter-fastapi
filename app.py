@@ -68,12 +68,12 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
 
     # Calculate order quantity based on balance, stoploss percentage, and leverage
-    order_qty = calculate_order_qty(balance, stoploss_percent, leverage)
+    order_qty = "0.01" #calculate_order_qty(balance, stoploss_percent, leverage)
     print("order_qty")
     print(order_qty)
 
     # Calculate actual leverage based on the calculated order quantity
-    actual_leverage = calculate_leverage(balance, order_qty, stoploss_percent)
+    actual_leverage = "17.5" # calculate_leverage(balance, order_qty, stoploss_percent)
     print("actual_leverage")
     print(actual_leverage)
 
