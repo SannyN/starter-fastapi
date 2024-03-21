@@ -48,11 +48,15 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
                         accountType="UNIFIED",
                         coin="USDT",
                     )
+    print(walletBalance)
     if walletBalance["ret_msg"] == "ok":
         balance = decimal.Decimal(walletBalance["result"]["USDT"]["margin"]["totalAvailableBalance"])
     else:
         print("Failed to get account info")
         return {"message": "Failed to get account info"}
+    
+    print("Balance")
+    print(balance)
 
     # Calculate leverage based on the stoploss percentage
     leverage = decimal.Decimal(100 / (stoploss_percent * 10))  # Formula for linear contracts
