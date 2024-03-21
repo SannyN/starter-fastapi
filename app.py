@@ -94,6 +94,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     print(balance)
 
+    return {"message": "What"}
+
     print("Cancel all active orders & positions")
     Helpers(session).close_position(category=category, symbol=symbol)
 
