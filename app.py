@@ -69,6 +69,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     # Calculate order quantity based on balance, stoploss percentage, and leverage
     order_qty = "0.01" #calculate_order_qty(balance, stoploss_percent, leverage)
+    dorder_qty = 0.01
     print("order_qty")
     print(order_qty)
 
@@ -113,7 +114,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         symbol=symbol,
         side='Buy' if data.side == "LONG" else 'Sell',
         orderType='Market',
-        qty=str(order_qty),
+        qty=str(dorder_qty),
         stopLoss=data.stop,
         slTriggerBy='MarkPrice'
     )
@@ -127,7 +128,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             symbol=symbol,
             side='Buy' if data.side == "SHORT" else 'Sell',
             orderType='Limit',
-            qty=str(order_qty * qty_factor),
+            qty=str(dorder_qty * qty_factor),
             timeInForce="PostOnly",
             positionIdx=0,
             price=price,
