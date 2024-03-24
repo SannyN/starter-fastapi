@@ -117,6 +117,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     except:
         print("Failed - continue")
 
+    return
+
     # Place market order
     resp = session.place_order(
         category='linear',
