@@ -83,6 +83,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     order_distance = dentry - dstop if data.side == "LONG" else dstop - dentry
 
     dorder_qty = (balance * risk) / order_distance
+    if dorder_qty < 0.001:
+        dorder_qty = 0.001
     print("dorder_qty")
     print(dorder_qty)
 
