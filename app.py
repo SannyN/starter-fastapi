@@ -92,12 +92,12 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     if data.side == "LONG":
         trailingSL = dentry - dstop
-        trailingTP1 = dtp1 - dentry
-        trailing = trailingSL if trailingSL > trailingTP1 else trailingTP1
+        trailingTP2 = dtp2 - dentry
+        trailing = trailingSL if trailingSL > trailingTP2 else trailingTP2
     else:
         trailingSL = dstop - dentry
-        trailingTP1 = dentry - dtp1
-        trailing = trailingSL if trailingSL > trailingTP1 else trailingTP1
+        trailingTP2 = dentry - dtp2
+        trailing = trailingSL if trailingSL > trailingTP2 else trailingTP2
 
     if dwinrate < 50:
         print("Winrate low")
@@ -156,14 +156,14 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print(resp)
 
     # Set trading stop
-    """
-        resp = session.set_trading_stop(
+    
+    resp = session.set_trading_stop(
         category=category,
         symbol=symbol,
         trailingStop=str(trailing),
-        activePrice=data.tp1,
+        activePrice=data.tp2,
         positionIdx=0
-    ) """
+    )
     print(resp)
 
     print(data)
