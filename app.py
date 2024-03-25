@@ -125,7 +125,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         orderType='Market',
         qty=str(dorder_qty),
         stopLoss=data.stop,
-        slTriggerBy='MarkPrice'
+        slTriggerBy='MarkPrice',
         positionIdx=0,
     )
     print(resp)
