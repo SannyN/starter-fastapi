@@ -80,7 +80,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     dstop = decimal.Decimal(data.stop)
     distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
 
-    dorder_qty = (balance/dentry) * dactual_leverage
+    dorder_qty = 0.01#(balance/dentry) * dactual_leverage
     print("dorder_qty")
     print(dorder_qty)
 
