@@ -69,7 +69,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     # Calculate order quantity based on balance, stoploss percentage, and leverage
     order_qty = "0.01" #calculate_order_qty(balance, stoploss_percent, leverage)
-    dorder_qty = 0.01
+    dorder_qty = decimal.Decimal(order_qty)
     print("order_qty")
     print(order_qty)
 
@@ -114,9 +114,12 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             sellLeverage=str(actual_leverage),
         )
         print(resp)
+    except RuntimeError as error:
+        print(error)
+        print("Failed - continue")
     except:
         print("Failed - continue")
-
+        
     # Place market order
     resp = session.place_order(
         category='linear',
