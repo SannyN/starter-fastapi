@@ -156,7 +156,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print(resp)
 
     # Set trading stop
-"""     resp = session.set_trading_stop(
+    """
+        resp = session.set_trading_stop(
         category=category,
         symbol=symbol,
         trailingStop=str(trailing),
