@@ -79,6 +79,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     dentry = decimal.Decimal(data.entry)
     dwinrate = decimal.Decimal(data.winrate)
     dtp1 = decimal.Decimal(data.tp1)
+    dtp2 = decimal.Decimal(data.tp2)
     dstop = decimal.Decimal(data.stop)
     distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
     risk = decimal.Decimal("0.1")
