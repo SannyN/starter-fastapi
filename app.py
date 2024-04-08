@@ -178,7 +178,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         category=category,
         symbol=symbol,
         trailingStop=str(trailing),
-        activePrice=activationPrice,
+        activePrice=str(activationPrice),
         positionIdx=0
     )
     print(resp)
