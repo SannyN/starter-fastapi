@@ -84,8 +84,6 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     dorder_qty = (balance * risk) / order_distance
 
-    if order_distance < 1000:
-        dorder_qty = dorder_qty / decimal.Decimal("1.5")
 
     if dorder_qty < 0.01:
         dorder_qty = 0.01
