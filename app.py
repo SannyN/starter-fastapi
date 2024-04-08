@@ -27,6 +27,7 @@ class WebhookData(BaseModel):
     min_winrate: str
     min_order: str
     entry: str
+    precision_input: str
     leverage: str
     tp1: TakeProfit
     tp2: TakeProfit
@@ -136,7 +137,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         symbol=symbol,
         side='Buy' if data.side == "LONG" else 'Sell',
         orderType='Market',
-        qty="{:.3f}".format(dorder_qty),
+        qty="{:" + data.precision + "f}".format(dorder_qty),
         stopLoss=data.stop,
         slTriggerBy='MarkPrice',
         positionIdx=0
@@ -155,7 +156,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             symbol=symbol,
             side='Buy' if data.side == "SHORT" else 'Sell',
             orderType='Limit',
-            qty="{:.3f}".format(decimal.Decimal(dorder_qty) * (decimal.Decimal(qty_factor) / 100)),
+            qty="{:" + data.precision + "f}".format(decimal.Decimal(dorder_qty) * (decimal.Decimal(qty_factor) / 100)),
             timeInForce="PostOnly",
             positionIdx=0,
             price=price,
