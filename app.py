@@ -103,14 +103,17 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(activationPrice)
     print(dbeTargetTrigger)
 
-    if data.side == "LONG":
-        trailingSL = dentry - dstop
-        trailingTP = activationPrice - dentry
-        trailing = trailingSL if trailingSL > trailingTP else trailingTP
-    else:
-        trailingSL = dstop - dentry
-        trailingTP = dentry - activationPrice
-        trailing = trailingSL if trailingSL > trailingTP else trailingTP
+    withTrailing = data.beTargetTrigger != "WITHOUT"
+
+    if withTrailing:
+        if data.side == "LONG":
+            trailingSL = dentry - dstop
+            trailingTP = activationPrice - dentry
+            trailing = trailingSL if trailingSL > trailingTP else trailingTP
+        else:
+            trailingSL = dstop - dentry
+            trailingTP = dentry - activationPrice
+            trailing = trailingSL if trailingSL > trailingTP else trailingTP
 
     if dwinrate < dmin_winrate:
         print("Winrate low")
@@ -174,13 +177,14 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         )
         print(resp)
         
-    resp = session.set_trading_stop(
-        category=category,
-        symbol=symbol,
-        trailingStop=str(trailing),
-        activePrice=str(activationPrice),
-        positionIdx=0
-    )
-    print(resp)
+    if withTrailing:
+        resp = session.set_trading_stop(
+            category=category,
+            symbol=symbol,
+            trailingStop=str(trailing),
+            activePrice=str(activationPrice),
+            positionIdx=0
+        )
+        print(resp)
 
     return {"nice"}
