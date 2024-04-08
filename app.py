@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Query
 from fastapi.responses import FileResponse
 from pybit.unified_trading import HTTP
 
@@ -24,10 +24,12 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.post("/webhook")
-async def webhook(data: str = Body()):
+@app.post("/webhook/")
+async def webhook(data: str = Body(), secret: str = Query(None)):
+    if os.environ["client_secret"] != secret: return {"nice1"}
+
     print(session.get_positions(category="linear", symbol="BTCUSDT"))
-    
+
     print("webhook")
     print(data)
     return {"nice"}
