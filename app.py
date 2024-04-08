@@ -79,7 +79,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     dtp1 = decimal.Decimal(data.tp1.value)
     dtp2 = decimal.Decimal(data.tp2.value)
 
-    dbeTargetTrigger = decimal.Decimal(data.beTargetTrigger) - 1
+    dbeTargetTrigger = int(data.beTargetTrigger) - 1
     dmin_winrate = decimal.Decimal(data.min_winrate)
     dmin_order = decimal.Decimal(data.min_order)
 
@@ -189,5 +189,5 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         positionIdx=0
     )
     print(resp)
-    
+
     return {"nice"}
