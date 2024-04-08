@@ -44,7 +44,6 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 @app.post("/webhook")
 async def webhook(data: WebhookData, secret: str = Query(None)):
-    getcontext().prec = 3
     if os.environ["client_secret"] != secret:
         print("secret")
         return {"message": "nice"}
