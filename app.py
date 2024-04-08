@@ -181,7 +181,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             activePrice=data.tp2.value,
             positionIdx=0
         )
-            print(resp)
+        print(resp)
     except RuntimeError as error:
         print(error)
         print("Failed - continue")
