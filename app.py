@@ -62,19 +62,15 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(balance)
 
     # Calculate leverage based on the stoploss percentage
-    leverage = decimal.Decimal(100 / (stoploss_percent * 10))  # Formula for linear contracts
-    print("leverage")
-    print(leverage)
+    #leverage = decimal.Decimal(100 / (stoploss_percent * 10))  # Formula for linear contracts
+    #print("leverage")
+    #print(leverage)
 
-
-    # Calculate order quantity based on balance, stoploss percentage, and leverage
-    order_qty = "0.01" #calculate_order_qty(balance, stoploss_percent, leverage)
-    dorder_qty = decimal.Decimal(order_qty)
-    print("order_qty")
-    print(order_qty)
 
     # Calculate actual leverage based on the calculated order quantity
     actual_leverage = "17.5" # calculate_leverage(balance, order_qty, stoploss_percent)
+    dactual_leverage = decimal.Decimal(actual_leverage)
+
     print("actual_leverage")
     print(actual_leverage)
 
@@ -83,6 +79,10 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     dtp1 = decimal.Decimal(data.tp1)
     dstop = decimal.Decimal(data.stop)
     distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
+
+    dorder_qty = (balance/dentry) * dactual_leverage
+    print("dorder_qty")
+    print(dorder_qty)
 
     if data.side == "LONG":
         trailingSL = dentry - dstop
@@ -119,7 +119,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print("Failed - continue")
     except:
         print("Failed - continue")
-        
+
     # Place market order
     resp = session.place_order(
         category='linear',
