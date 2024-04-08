@@ -84,9 +84,9 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print("Winrate")
     print(data.winrate)
     print("Distance")
-    print(data.distance)
+    print(distance)
     print("Trailing")
-    print(data.trailing)
+    print(trailing)
 
     if dwinrate < 50:
         print("Winrate low")
