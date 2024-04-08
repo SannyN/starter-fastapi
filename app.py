@@ -64,7 +64,7 @@ def set_mode():
 
 
 @app.post("/webhook")
-async def webhook(data: WebhookData = Body(), secret: str = Query(None)):
+async def webhook(data: WebhookData, secret: str = Query(None)):
     if os.environ["client_secret"] != secret:
         print("secret")
         return {"nice"}
