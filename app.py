@@ -159,7 +159,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             symbol=symbol,
             side='Buy' if data.side == "SHORT" else 'Sell',
             orderType='Limit',
-            qty="{:" + data.precision + "f}".format(decimal.Decimal(dorder_qty) * (decimal.Decimal(qty_factor) / 100)),
+            qty="{:" + data.precision + "f}".format(decimal.Decimal(dorder_qty) * qty_factor),
             timeInForce="PostOnly",
             positionIdx=0,
             price=price,
