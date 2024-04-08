@@ -145,7 +145,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(resp)
 
     # Place limit orders
-    orders = [(data.tp1, data.tp2, data.tp3, data.tp4)]
+    orders = [data.tp1, data.tp2, data.tp3, data.tp4]
 
     for order in orders:
         qty_factor = decimal.Decimal(order.percentage) / 100
