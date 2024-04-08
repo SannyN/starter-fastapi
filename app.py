@@ -33,8 +33,7 @@ def calculate_order_qty(balance, stoploss_percent, leverage):
     return balance * stoploss_percent / (100 * leverage)
 
 def calculate_leverage(order_qty, balance, stoploss_percent):
-    return (order_qty * 100 * stoploss_percent) / balance
-
+    return order_qty * 100 * stoploss_percent / balance
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
