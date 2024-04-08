@@ -82,7 +82,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     dwinrate = decimal.Decimal(data.winrate)
     dtp1 = decimal.Decimal(data.tp1)
     dstop = decimal.Decimal(data.stop)
-    distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 10
+    distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
 
     if data.side == "LONG":
         trailingSL = dentry - dstop
