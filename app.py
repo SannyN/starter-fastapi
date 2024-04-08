@@ -1,21 +1,11 @@
-from fastapi import FastAPI, Body, Query
-from fastapi.responses import FileResponse
-from fastapi.middleware.gzip import GZipMiddleware
+from fastapi import FastAPI, Query
 from pybit.unified_trading import HTTP
 from pybit.helpers import Helpers
 from pydantic import BaseModel
-
-import json
+import os
 import decimal
 
-import os
-
-from pydantic import BaseModel
-
 app = FastAPI()
-
-
-app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 session = HTTP(
     api_key=os.environ["api_key"],
@@ -23,17 +13,8 @@ session = HTTP(
     testnet=False,
 )
 
-
-class Item(BaseModel):
-    item_id: int
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-symbol="BTCUSDT"
-category="linear"
+symbol = "BTCUSDT"
+category = "linear"
 
 class WebhookData(BaseModel):
     side: str
@@ -47,32 +28,40 @@ class WebhookData(BaseModel):
     beTargetTrigger: str
     stop: str
 
+def calculate_order_qty(balance, stoploss_percent, leverage):
+    return balance * stoploss_percent / (100 * leverage)
 
-# Changing mode and leverage: 
-def set_mode():
-    try:
-        resp = session.switch_margin_mode(
-            category='linear',
-            symbol=symbol,
-            tradeMode=mode,
-            buyLeverage=leverage,
-            sellLeverage=leverage
-        )
-        print(resp)
-    except Exception as err:
-        print(err)
-
+def calculate_leverage(balance, order_qty, stoploss_percent):
+    return (balance * stoploss_percent) / (order_qty * 100)
 
 @app.post("/webhook")
 async def webhook(data: WebhookData, secret: str = Query(None)):
     if os.environ["client_secret"] != secret:
         print("secret")
-        return {"nice"}
+        return {"message": "nice"}
 
+    stoploss_percent = 10  # 10% Stoploss
 
-    leverage = "17.5"
-    order_qty = "0.01"
-    dorder_qty = 0.01
+    # Get account balance
+    
+    walletBalance = session.get_wallet_balance(
+                        accountType="UNIFIED",
+                        coin="USDT",
+                    )
+    if walletBalance["ret_msg"] == "ok":
+        balance = decimal.Decimal(walletBalance["result"]["BTCUSDT"]["margin"]["totalAvailableBalance"])
+    else:
+        print("Failed to get account info")
+        return {"message": "Failed to get account info"}
+
+    # Calculate leverage based on the stoploss percentage
+    leverage = decimal.Decimal(100 / (stoploss_percent * 10))  # Formula for linear contracts
+
+    # Calculate order quantity based on balance, stoploss percentage, and leverage
+    order_qty = calculate_order_qty(balance, stoploss_percent, leverage)
+
+    # Calculate actual leverage based on the calculated order quantity
+    actual_leverage = calculate_leverage(balance, order_qty, stoploss_percent)
 
     dentry = decimal.Decimal(data.entry)
     dwinrate = decimal.Decimal(data.winrate)
@@ -80,96 +69,54 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
     trailing = dentry - dstop if data.side == "LONG" else dstop - dentry
 
-
-    print("Winrate")
-    print(data.winrate)
-    print("Distance")
-    print(distance)
-    print("Trailing")
-    print(trailing)
-
     if dwinrate < 50:
         print("Winrate low")
-        return {"nice"}
+        return {"message": "Winrate too low"}
 
     if distance > 3:
-        print("distance to high")
-        return {"nice"}
-    
+        print("Distance too high")
+        return {"message": "Distance too high"}
+
     print("Cancel all active orders & positions")
     Helpers(session).close_position(category=category, symbol=symbol)
 
+    # Place market order
     resp = session.place_order(
         category='linear',
         symbol=symbol,
         side='Buy' if data.side == "LONG" else 'Sell',
         orderType='Market',
-        qty=order_qty,
+        qty=str(order_qty),
         stopLoss=data.stop,
         slTriggerBy='MarkPrice'
     )
-
     print(resp)
 
-    resp = session.place_order(
-        category='linear',
+    # Place limit orders
+    orders = [(0.4, data.tp1), (0.3, data.tp2), (0.2, data.tp3)]
+    for qty_factor, price in orders:
+        resp = session.place_order(
+            category='linear',
+            symbol=symbol,
+            side='Buy' if data.side == "SHORT" else 'Sell',
+            orderType='Limit',
+            qty=str(order_qty * qty_factor),
+            timeInForce="PostOnly",
+            positionIdx=0,
+            price=price,
+            reduceOnly=True
+        )
+        print(resp)
+
+    # Set trading stop
+    resp = session.set_trading_stop(
+        category=category,
         symbol=symbol,
-        side='Buy' if data.side == "SHORT" else 'Sell',
-        orderType='Limit',
-        qty=dorder_qty*0.4,
-        timeInForce="PostOnly",
-        positionIdx=0,
-        price=data.tp1,
-        reduceOnly=True
+        trailingStop=str(trailing),
+        activePrice=data.tp1,
+        positionIdx=0
     )
-    
     print(resp)
-
-    resp = session.place_order(
-            category='linear',
-            symbol=symbol,
-            side='Buy' if data.side == "SHORT" else 'Sell',
-            orderType='Limit',
-            qty=dorder_qty*0.3,
-            timeInForce="PostOnly",
-            positionIdx=0,
-            price=data.tp2,
-            reduceOnly=True
-    )
-
-    print(resp)
-
-    resp = session.place_order(
-            category='linear',
-            symbol=symbol,
-            side='Buy' if data.side == "SHORT" else 'Sell',
-            orderType='Limit',
-            qty=dorder_qty*0.2,
-            timeInForce="PostOnly",
-            positionIdx=0,
-            price=data.tp3,
-            reduceOnly=True
-    )
-
-    print(resp)
-
-    resp = session.set_trading_stop(
-    category=category,
-    symbol=symbol,
-    trailingStop=str(trailing),
-    activePrice=data.tp1,
-    positionIdx=0
-    )
-
-    """
-
-    print(resp)
-
-    resp = session.set_trading_stop(
-    
-            )
-    
-    """
 
     print(data)
     return {"nice"}
