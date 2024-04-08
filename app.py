@@ -140,7 +140,6 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
         side='Buy' if side == "SHORT" else 'Sell',
         orderType='Limit',
         qty=dorder_qty*0.4,
-        closeOnTrigger=true,
         timeInForce="PostOnly",
         positionIdx=0,
         price=tp1)
@@ -153,7 +152,6 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
             side='Buy' if side == "SHORT" else 'Sell',
             orderType='Limit',
             qty=dorder_qty*0.3,
-            closeOnTrigger=true,
             timeInForce="PostOnly",
             positionIdx=1,
             price=tp2)
@@ -166,7 +164,6 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
             side='Buy' if side == "SHORT" else 'Sell',
             orderType='Limit',
             qty=dorder_qty*0.2,
-            closeOnTrigger=true,
             timeInForce="PostOnly",
             positionIdx=2,
             price=tp3)
