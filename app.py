@@ -48,6 +48,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print("secret")
         return {"message": "nice"}
 
+    print(data)
     # BTCUSDT.P
     symbol = data.ticker.replace(".P", "")
     # Get account balance
