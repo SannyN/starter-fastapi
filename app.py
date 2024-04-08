@@ -27,7 +27,7 @@ class WebhookData(BaseModel):
     min_winrate: str
     min_order: str
     entry: str
-    precision_input: str
+    precision: str
     leverage: str
     tp1: TakeProfit
     tp2: TakeProfit
