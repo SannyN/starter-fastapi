@@ -77,6 +77,10 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     dwinrate = decimal.Decimal(data.winrate)
     dtp1 = decimal.Decimal(data.tp1.value)
     dtp2 = decimal.Decimal(data.tp2.value)
+
+    dmin_winrate = decimal.Decimal(data.min_winrate)
+    dmin_order = decimal.Decimal(data.min_order)
+
     dstop = decimal.Decimal(data.stop)
     distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
     risk = decimal.Decimal(data.risk)
@@ -84,8 +88,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     dorder_qty = (balance * risk) / order_distance
 
-    if dorder_qty < 0.01:
-        dorder_qty = 0.01
+    if dorder_qty < dmin_order:
+        dorder_qty = dmin_order
         
     print("dorder_qty")
     print(dorder_qty)
@@ -99,7 +103,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         trailingTP2 = dentry - dtp2
         trailing = trailingSL if trailingSL > trailingTP2 else trailingTP2
 
-    if dwinrate < 50:
+    if dwinrate < dmin_winrate:
         print("Winrate low")
         return {"message": "Winrate too low"}
 
