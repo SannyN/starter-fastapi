@@ -10,7 +10,6 @@ from decimal import *
 app = FastAPI()
 
 session = HTTP(
-    endpoint=os.environ["bybit_endpoint"],
     api_key=os.environ["api_key"],
     api_secret=os.environ["api_secret"],
     testnet=os.environ["testnet"] == "true",
