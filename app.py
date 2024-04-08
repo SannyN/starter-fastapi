@@ -137,7 +137,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         symbol=symbol,
         side='Buy' if data.side == "LONG" else 'Sell',
         orderType='Market',
-        qty=round(dorder_qty, int(data.precision))
+        qty=round(dorder_qty, int(data.precision)),
         stopLoss=data.stop,
         slTriggerBy='MarkPrice',
         positionIdx=0
