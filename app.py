@@ -32,8 +32,8 @@ class WebhookData(BaseModel):
 def calculate_order_qty(balance, stoploss_percent, leverage):
     return balance * stoploss_percent / (100 * leverage)
 
-def calculate_leverage(balance, order_qty, stoploss_percent):
-    return (balance * stoploss_percent * 10) / order_qty
+def calculate_leverage(order_qty, balance, stoploss_percent):
+    return (order_qty * 100 * stoploss_percent) / balance
 
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
