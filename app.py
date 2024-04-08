@@ -116,13 +116,9 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     if withTrailing:
         if data.side == "LONG":
-            trailingSL = dentry - dstop
-            trailingTP = activationPrice - dentry
-            trailing = trailingSL if trailingSL > trailingTP else trailingTP
+            trailing = activationPrice - dentry
         else:
-            trailingSL = dstop - dentry
-            trailingTP = dentry - activationPrice
-            trailing = trailingSL if trailingSL > trailingTP else trailingTP
+            trailing =  dentry - activationPrice
 
     if dwinrate < dmin_winrate:
         print("Winrate low")
