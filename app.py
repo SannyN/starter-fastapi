@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Query
 from pybit.unified_trading import HTTP
 from pybit.helpers import Helpers
+from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel
 import os
 import decimal
