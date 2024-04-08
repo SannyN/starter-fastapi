@@ -15,7 +15,6 @@ session = HTTP(
     testnet=False,
 )
 
-symbol = "BTCUSDT"
 category = "linear"
 
 class WebhookData(BaseModel):
@@ -41,6 +40,9 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     if os.environ["client_secret"] != secret:
         print("secret")
         return {"message": "nice"}
+
+    # BTCUSDT.P
+    symbol = data.ticker.replace(".P", "")
 
     stoploss_percent = 10  # 10% Stoploss
 
