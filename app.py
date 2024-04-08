@@ -34,6 +34,9 @@ def calculate_order_qty(balance, stoploss_percent, leverage):
 def calculate_leverage(balance, order_qty, stoploss_percent):
     return (balance * stoploss_percent) / (order_qty * 100)
 
+
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
 @app.post("/webhook")
 async def webhook(data: WebhookData, secret: str = Query(None)):
     if os.environ["client_secret"] != secret:
