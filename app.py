@@ -83,7 +83,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     dstop = decimal.Decimal(data.stop)
     distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
-    risk = decimal.Decimal(data.risk)
+    risk = decimal.Decimal(data.risk) / 100
     order_distance = dentry - dstop if data.side == "LONG" else dstop - dentry
 
     dorder_qty = (balance * risk) / order_distance
