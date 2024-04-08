@@ -75,11 +75,13 @@ def set_mode():
 
 @app.post("/webhook")
 async def webhook(data: str = Body(), secret: str = Query(None)):
-    if os.environ["client_secret"] != secret: return {"nice"}
+    if os.environ["client_secret"] != secret:
+        print("secret")
+        return {"nice"}
 
     webhookData = json.loads(data)
 
-    leverage = 20
+    leverage = 37.5
 
     side = webhookData["side"]
     entry = decimal.Decimal(webhookData["entry"])
@@ -89,9 +91,18 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     tp4 = decimal.Decimal(webhookData["tp4"])
     winrate = decimal.Decimal(webhookData["winrate"])
     stop = decimal.Decimal(webhookData["stop"])
+    distance = entry - stop if side == "LONG" else stop - entry
 
     print("Winrate")
     print(winrate)
+    print("Distance")
+    print(distance)
+
+    if winrate < 50:
+        print("Winrate low")
+        return {"nice"}
+    
+
 
     print("Cancel all active orders & positions")
     Helpers(session).close_position(category=category, symbol=symbol)
