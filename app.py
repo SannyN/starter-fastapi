@@ -108,6 +108,8 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     print(winrate)
     print("Distance")
     print(distance)
+    print("Trailing")
+    print(trailing)
 
     if dwinrate < 50:
         print("Winrate low")
@@ -173,10 +175,6 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     resp = session.set_trading_stop(
     category=category,
     symbol=symbol,
-    takeProfit=null,
-    stopLoss=null,
-    tpTriggerBy=null,
-    slTriggerBy=null,
     trailingStop=str(trailing),
     activePrice=tp1,
     positionIdx=0
