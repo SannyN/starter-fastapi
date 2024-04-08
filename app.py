@@ -19,6 +19,7 @@ symbol = "BTCUSDT"
 category = "linear"
 
 class WebhookData(BaseModel):
+    ticker: str
     side: str
     entry: str
     tp1: str
@@ -29,12 +30,8 @@ class WebhookData(BaseModel):
     strategy: str
     beTargetTrigger: str
     stop: str
-
-def calculate_order_qty(balance, stoploss_percent, leverage):
-    return balance * stoploss_percent / (100 * leverage)
-
-def calculate_leverage(order_qty, balance, stoploss_percent):
-    return order_qty * 100 * stoploss_percent / balance
+    risk: str
+    test: bool | None
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
@@ -86,6 +83,10 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     order_distance = dentry - dstop if data.side == "LONG" else dstop - dentry
 
     dorder_qty = (balance * risk) / order_distance
+
+    if order_distance < 1000:
+        dorder_qty = dorder_qty / decimal.Decimal("1.5")
+
     if dorder_qty < 0.01:
         dorder_qty = 0.01
     print("dorder_qty")
