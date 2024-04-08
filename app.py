@@ -47,9 +47,9 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     if os.environ["client_secret"] != secret: return {"nice"}
 
     positions = session.get_positions(category=category, symbol=symbol)
-    print(positions)
 
-    if "list" in positions:
+    if len(positions.result.list) > 0:
+        print(positions.result.list)
         print("Cancel all active orders & positions")
         session.cancel_all_orders(category=category, settleCoin="USDT")
         session.close_position(category=category, symbol=symbol)
