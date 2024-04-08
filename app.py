@@ -140,7 +140,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(resp)
 
     # Place limit orders
-    orders = [(0.4, data.tp1), (0.3, data.tp2), (0.2, data.tp3)]
+    orders = [(0.4, data.tp1), (0.3, data.tp2), (0.2, data.tp3), (0.1, data.tp4)]
     for qty_factor, price in orders:
         resp = session.place_order(
             category='linear',
