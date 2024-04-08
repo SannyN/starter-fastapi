@@ -146,6 +146,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     except:
         print("Failed - continue")
 
+    print("market order qty:")
+    print(round(float(dorder_qty), int(data.precision)))
     # Place market order
     resp = session.place_order(
         category='linear',
@@ -168,6 +170,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         if qty_factor == 0:
             continue
         
+        print("limit market order qty:")
+        print(round(float(dorder_qty*qty_factor), int(data.precision)))
         resp = session.place_order(
             category='linear',
             symbol=symbol,
@@ -182,6 +186,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print(resp)
         
     if withTrailing:
+        print("with trailing:")
+        print(trailing)
         resp = session.set_trading_stop(
             category=category,
             symbol=symbol,
