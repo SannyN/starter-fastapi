@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Body, Query
 from fastapi.responses import FileResponse
+from fastapi.middleware.gzip import GZipMiddleware
 from pybit.unified_trading import HTTP
 from pybit.helpers import Helpers
 import json
@@ -10,6 +11,9 @@ import os
 from pydantic import BaseModel
 
 app = FastAPI()
+
+
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 session = HTTP(
     api_key=os.environ["api_key"],
@@ -82,17 +86,20 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     webhookData = json.loads(data)
 
     leverage = "25"
-    amount = 0.01
+    order_qty = "0.01"
 
     side = webhookData["side"]
-    entry = decimal.Decimal(webhookData["entry"])
-    tp1 = decimal.Decimal(webhookData["tp1"])
-    tp2 = decimal.Decimal(webhookData["tp2"])
-    tp3 = decimal.Decimal(webhookData["tp3"])
-    tp4 = decimal.Decimal(webhookData["tp4"])
-    winrate = decimal.Decimal(webhookData["winrate"])
-    stop = decimal.Decimal(webhookData["stop"])
-    distance = (entry * 100 / stop if side == "LONG" else stop * 100 / entry) - 100
+    entry = webhookData["entry"]
+    dentry = decimal.Decimal(webhookData["entry"])
+    tp1 = webhookData["tp1"]
+    tp2 = webhookData["tp2"]
+    tp3 = webhookData["tp3"]
+    tp4 = webhookData["tp4"]
+    winrate = webhookData["winrate"]
+    dwinrate = decimal.Decimal(webhookData["winrate"])
+    stop = webhookData["stop"]
+    dstop = decimal.Decimal(webhookData["stop"])
+    distance = (dentry * 100 / dstop if side == "LONG" else dstop * 100 / dentry) - 100
 
 
     print("Winrate")
@@ -100,7 +107,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     print("Distance")
     print(distance)
 
-    if winrate < 50:
+    if dwinrate < 50:
         print("Winrate low")
         return {"nice"}
 
@@ -119,8 +126,32 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
         buyLeverage=leverage,
         sellLeverage=leverage
     )
-
     print(resp)
+    
+    """ resp = session.place_order(
+                category='linear',
+                symbol=symbol,
+                side='Buy' if side == "LONG" else 'Sell',
+                orderType='Market',
+                qty=order_qty,
+                stopLoss=stop,
+                slTriggerBy='Market'
+            ) """
+    
+    # print(resp)
+
+    """ resp = session.place_order(
+            category='linear',
+            symbol=symbol,
+            side='Buy' if side == "LONG" else 'Sell',
+            orderType='Limit',
+            qty=order_qty,
+            stopLoss=stop,
+            slTriggerBy='Market'
+        )
+        """
+    
+    #print(resp)
 
     print(data)
     return {"nice"}
