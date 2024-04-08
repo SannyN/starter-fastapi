@@ -131,18 +131,24 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     except:
         print("Failed - continue")
 
-    # Place market order
-    resp = session.place_order(
-        category='linear',
-        symbol=symbol,
-        side='Buy' if data.side == "LONG" else 'Sell',
-        orderType='Market',
-        qty=round(dorder_qty, int(data.precision)),
-        stopLoss=data.stop,
-        slTriggerBy='MarkPrice',
-        positionIdx=0
-    )
-    print(resp)
+    try:
+        # Place market order
+        resp = session.place_order(
+            category='linear',
+            symbol=symbol,
+            side='Buy' if data.side == "LONG" else 'Sell',
+            orderType='Market',
+            qty=round(dorder_qty, int(data.precision)),
+            stopLoss=data.stop,
+            slTriggerBy='MarkPrice',
+            positionIdx=0
+        )
+        print(resp)
+    except RuntimeError as error:
+        print(error)
+        print("Failed - continue")
+    except:
+        print("Failed - continue")
 
     # Place limit orders
     orders = [data.tp1, data.tp2, data.tp3, data.tp4]
@@ -153,30 +159,42 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
         if qty_factor == 0:
             continue
+        
+        try:
+            resp = session.place_order(
+                category='linear',
+                symbol=symbol,
+                side='Buy' if data.side == "SHORT" else 'Sell',
+                orderType='Limit',
+                qty=round(decimal.Decimal(dorder_qty) * qty_factor, int(data.precision)),
+                timeInForce="PostOnly",
+                positionIdx=0,
+                price=price,
+                reduceOnly=True
+            )
+            print(resp)
+        except RuntimeError as error:
+            print(error)
+            print("Failed - continue")
+        except:
+            print("Failed - continue")
 
-        resp = session.place_order(
-            category='linear',
+    try:
+        # Set trading stop
+        # Config this
+        resp = session.set_trading_stop(
+            category=category,
             symbol=symbol,
-            side='Buy' if data.side == "SHORT" else 'Sell',
-            orderType='Limit',
-            qty=round(decimal.Decimal(dorder_qty) * qty_factor, int(data.precision)),
-            timeInForce="PostOnly",
-            positionIdx=0,
-            price=price,
-            reduceOnly=True
+            trailingStop=str(trailing),
+            activePrice=data.tp2.value,
+            positionIdx=0
         )
         print(resp)
-
-    # Set trading stop
-    # Config this
-    resp = session.set_trading_stop(
-        category=category,
-        symbol=symbol,
-        trailingStop=str(trailing),
-        activePrice=data.tp2.value,
-        positionIdx=0
-    )
-    print(resp)
+    except RuntimeError as error:
+        print(error)
+        print("Failed - continue")
+    except:
+        print("Failed - continue")
 
     print(data)
     return {"nice"}
