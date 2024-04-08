@@ -139,24 +139,17 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     except:
         print("Failed - continue")
 
-    try:
-        # Place market order
-        resp = session.place_order(
-            category='linear',
-            symbol=symbol,
-            side='Buy' if data.side == "LONG" else 'Sell',
-            orderType='Market',
-            qty=round(dorder_qty, int(data.precision)),
-            stopLoss=data.stop,
-            slTriggerBy='MarkPrice',
-            positionIdx=0
-        )
-        print(resp)
-    except RuntimeError as error:
-        print(error)
-        print("Failed - continue")
-    except:
-        print("Failed - continue")
+    # Place market order
+    resp = session.place_order(
+        category='linear',
+        symbol=symbol,
+        side='Buy' if data.side == "LONG" else 'Sell',
+        orderType='Market',
+        qty=round(dorder_qty, int(data.precision)),
+        stopLoss=data.stop,
+        slTriggerBy='MarkPrice',
+        positionIdx=0
+    )
 
     # Place limit orders
     orders = [data.tp1, data.tp2, data.tp3, data.tp4]
