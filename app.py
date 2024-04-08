@@ -24,7 +24,7 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.post("/webhook/")
+@app.post("/webhook")
 async def webhook(data: str = Body(), secret: str = Query(None)):
     if os.environ["client_secret"] != secret: return {"nice1"}
 
