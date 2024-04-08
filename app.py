@@ -11,7 +11,7 @@ app = FastAPI()
 session = HTTP(
     api_key=os.environ["api_key"],
     api_secret=os.environ["api_secret"],
-    testnet=False,
+    testnet=True,
 )
 
 print(session.get_positions(category="linear", symbol="BTCUSDT"))
