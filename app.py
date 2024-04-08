@@ -91,7 +91,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     tp4 = decimal.Decimal(webhookData["tp4"])
     winrate = decimal.Decimal(webhookData["winrate"])
     stop = decimal.Decimal(webhookData["stop"])
-    distance = (entry * 100 / stop if side == "LONG" else stop * 100 / 100) - 100
+    distance = (entry * 100 / stop if side == "LONG" else stop * 100 / entry) - 100
 
 
     print("Winrate")
@@ -103,7 +103,7 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
         print("Winrate low")
         return {"nice"}
 
-    if distance > 1500:
+    if distance > 2:
         print("distance to high")
         return {"nice"}
     
