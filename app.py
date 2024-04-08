@@ -3,6 +3,8 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from pybit.unified_trading import HTTP
 from pybit.helpers import Helpers
+from pydantic import BaseModel
+
 import json
 import decimal
 
@@ -33,34 +35,18 @@ async def root():
 symbol="BTCUSDT"
 category="linear"
 
-""" 
-{
-    "side": "LONG",
-    "entry": "63816.2",
-    "tp1": "64454.4",
-    "tp2": "65092.5",
-    "tp3": "65730.7",
-    "tp4": "66368.8",
-    "winrate": "52",
-    "strategy": "MANUAL",
-    "beTargetTrigger": "1",
-    "stop": "62810.8"
-}
+class WebhookData(BaseModel):
+    side: str
+    entry: str
+    tp1: str
+    tp2: str
+    tp3: str
+    tp4: str
+    winrate: str
+    strategy: str
+    beTargetTrigger: str
+    stop: str
 
-
-{
-    "side": "SHORT",
-    "entry": "67023.9",
-    "tp1": "66353.7",
-    "tp2": "65683.4",
-    "tp3": "65013.2",
-    "tp4": "64342.9",
-    "winrate": "51.03",
-    "strategy": "MANUAL",
-    "beTargetTrigger": "1",
-    "stop": "67864.7"
-}
-"""
 
 # Changing mode and leverage: 
 def set_mode():
@@ -78,28 +64,27 @@ def set_mode():
 
 
 @app.post("/webhook")
-async def webhook(data: str = Body(), secret: str = Query(None)):
+async def webhook(data: WebhookData = Body(), secret: str = Query(None)):
     if os.environ["client_secret"] != secret:
         print("secret")
         return {"nice"}
 
-    webhookData = json.loads(data)
 
     leverage = "17.5"
     order_qty = "0.01"
     dorder_qty = 0.01
 
-    side = webhookData["side"]
-    entry = webhookData["entry"]
-    dentry = decimal.Decimal(webhookData["entry"])
-    tp1 = webhookData["tp1"]
-    tp2 = webhookData["tp2"]
-    tp3 = webhookData["tp3"]
-    tp4 = webhookData["tp4"]
-    winrate = webhookData["winrate"]
-    dwinrate = decimal.Decimal(webhookData["winrate"])
-    stop = webhookData["stop"]
-    dstop = decimal.Decimal(webhookData["stop"])
+    side = data["side"]
+    entry = data["entry"]
+    dentry = decimal.Decimal(data["entry"])
+    tp1 = data["tp1"]
+    tp2 = data["tp2"]
+    tp3 = data["tp3"]
+    tp4 = data["tp4"]
+    winrate = data["winrate"]
+    dwinrate = decimal.Decimal(data["winrate"])
+    stop = data["stop"]
+    dstop = decimal.Decimal(data["stop"])
     distance = (dentry * 100 / dstop if side == "LONG" else dstop * 100 / dentry) - 100
     trailing = dentry - dstop if side == "LONG" else dstop - dentry
 
