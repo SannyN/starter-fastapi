@@ -147,8 +147,11 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     # Place limit orders
     orders = [(data.tp1, data.tp2, data.tp3, data.tp4)]
 
-    for qty_factor, price in orders:
-        if decimal.Decimal(qty_factor) == 0:
+    for order in orders:
+        qty_factor = decimal.Decimal(order.percentage) / 100
+        price = decimal.Decimal(order.value)
+
+        if qty_factor == 0:
             continue
 
         resp = session.place_order(
@@ -170,7 +173,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         category=category,
         symbol=symbol,
         trailingStop=str(trailing),
-        activePrice=data.tp2,
+        activePrice=data.tp2.value,
         positionIdx=0
     )
     print(resp)
