@@ -113,10 +113,9 @@ async def webhook(data: str = Body(), secret: str = Query(None)):
     print("Cancel all active orders & positions")
     Helpers(session).close_position(category=category, symbol=symbol)
 
-    resp = session.switch_margin_mode(
-        category='linear',
+    resp = session.set_leverage(
+        category=category,
         symbol=symbol,
-        tradeMode=mode,
         buyLeverage=leverage,
         sellLeverage=leverage
     )
