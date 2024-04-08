@@ -147,6 +147,9 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     orders = [(data.tp1, data.tp2, data.tp3, data.tp4)]
 
     for qty_factor, price in orders:
+        if decimal.Decimal(qty_factor) == 0:
+            continue
+
         resp = session.place_order(
             category='linear',
             symbol=symbol,
