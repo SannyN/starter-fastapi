@@ -17,14 +17,21 @@ session = HTTP(
 
 category = "linear"
 
+class TakeProfit(BaseModel):
+    value: str
+    percentage: str
+
 class WebhookData(BaseModel):
     ticker: str
     side: str
+    min_winrate: str
+    min_order: str
     entry: str
-    tp1: str
-    tp2: str
-    tp3: str
-    tp4: str
+    leverage: str
+    tp1: TakeProfit
+    tp2: TakeProfit
+    tp3: TakeProfit
+    tp4: TakeProfit
     winrate: str
     strategy: str
     beTargetTrigger: str
@@ -43,9 +50,6 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     # BTCUSDT.P
     symbol = data.ticker.replace(".P", "")
-
-    stoploss_percent = 10  # 10% Stoploss
-
     # Get account balance
     
     walletBalance = session.get_wallet_balance(
@@ -62,14 +66,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print("Balance")
     print(balance)
 
-    # Calculate leverage based on the stoploss percentage
-    #leverage = decimal.Decimal(100 / (stoploss_percent * 10))  # Formula for linear contracts
-    #print("leverage")
-    #print(leverage)
-
-
-    # Calculate actual leverage based on the calculated order quantity
-    actual_leverage = "17.5" # calculate_leverage(balance, order_qty, stoploss_percent)
+    actual_leverage = data.leverage
     dactual_leverage = decimal.Decimal(actual_leverage)
 
     print("actual_leverage")
@@ -77,18 +74,18 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     dentry = decimal.Decimal(data.entry)
     dwinrate = decimal.Decimal(data.winrate)
-    dtp1 = decimal.Decimal(data.tp1)
-    dtp2 = decimal.Decimal(data.tp2)
+    dtp1 = decimal.Decimal(data.tp1.value)
+    dtp2 = decimal.Decimal(data.tp2.value)
     dstop = decimal.Decimal(data.stop)
     distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
-    risk = decimal.Decimal("0.1")
+    risk = decimal.Decimal(data.risk)
     order_distance = dentry - dstop if data.side == "LONG" else dstop - dentry
 
     dorder_qty = (balance * risk) / order_distance
 
-
     if dorder_qty < 0.01:
         dorder_qty = 0.01
+        
     print("dorder_qty")
     print(dorder_qty)
 
@@ -142,14 +139,15 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(resp)
 
     # Place limit orders
-    orders = [("0.4", data.tp1), ("0.3", data.tp2), ("0.2", data.tp3)]
+    orders = [(data.tp1, data.tp2, data.tp3, data.tp4)]
+
     for qty_factor, price in orders:
         resp = session.place_order(
             category='linear',
             symbol=symbol,
             side='Buy' if data.side == "SHORT" else 'Sell',
             orderType='Limit',
-            qty="{:.3f}".format(decimal.Decimal(dorder_qty) * decimal.Decimal(qty_factor)),
+            qty="{:.3f}".format(decimal.Decimal(dorder_qty) * (decimal.Decimal(qty_factor) / 100)),
             timeInForce="PostOnly",
             positionIdx=0,
             price=price,
@@ -158,7 +156,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print(resp)
 
     # Set trading stop
-    
+    # Config this
     resp = session.set_trading_stop(
         category=category,
         symbol=symbol,
