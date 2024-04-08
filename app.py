@@ -95,6 +95,17 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print("Cancel all active orders & positions")
     Helpers(session).close_position(category=category, symbol=symbol)
 
+    try:
+        resp = session.set_leverage(
+            category=categoy,
+            symbol=symbol,
+            buyLeverage=str(actual_leverage),
+            sellLeverage=str(actual_leverage),
+        )
+        print(resp)
+    except:
+        print("Failed - continue")
+
     # Place market order
     resp = session.place_order(
         category='linear',
