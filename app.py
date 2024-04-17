@@ -139,7 +139,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     try:
         resp = session.set_leverage(
-            category=categoy,
+            category=category,
             symbol=symbol,
             buyLeverage=str(actual_leverage),
             sellLeverage=str(actual_leverage),
