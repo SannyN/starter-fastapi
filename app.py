@@ -26,7 +26,7 @@ class WebhookData(BaseModel):
     side: str
     min_winrate: str
     min_order: str
-    max_order: str
+    max_order: str | None
     entry: str
     precision: str
     leverage: str
@@ -82,7 +82,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     dbeTargetTrigger = int(data.beTargetTrigger) - 1
     dmin_winrate = decimal.Decimal(data.min_winrate)
     dmin_order = decimal.Decimal(data.min_order)
-    dmax_order = decimal.Decimal(data.max_order)
+    dmax_order = decimal.Decimal(data.max_order) if data.max_order is not None else 0
 
     dstop = decimal.Decimal(data.stop)
     distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
