@@ -142,7 +142,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             category=category,
             symbol=symbol,
             buyLeverage=str(actual_leverage),
-            sellLeverage=str(actual_leverage),
+            sellLeverage=str(actual_leverage)
         )
         print(resp)
     except RuntimeError as error:
@@ -150,6 +150,22 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print("Failed - continue")
     except:
         print("Failed - continue")
+
+    
+    try:
+        resp = session.set_risk_limit(
+            category=category,
+            symbol=symbol,
+            riskId=4,
+            positionIdx=0 
+        )
+        print(resp)
+    except RuntimeError as error:
+        print(error)
+        print("Failed - continue")
+    except:
+        print("Failed - continue")
+
 
     print("market order qty:")
     print(round(float(dorder_qty), int(data.precision)))
