@@ -128,10 +128,6 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print("Winrate low")
         return {"message": "Winrate too low"}
 
-    if distance > 3:
-        print("Distance too high")
-        return {"message": "Distance too high"}
-
     print(balance)
 
     print("Cancel all active orders & positions")
