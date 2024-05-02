@@ -25,10 +25,7 @@ class WebhookData(BaseModel):
     ticker: str
     side: str
     min_winrate: str
-    min_order: str
-    max_order: str | None
     entry: str
-    precision: str
     leverage: str
     tp1: TakeProfit
     tp2: TakeProfit
@@ -68,24 +65,40 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print("Balance")
     print(balance)
 
+    instruments = session.get_instruments_info(category=category, symbol=symbol)
+    qtyStep = instruments["result"]["list"][0]["lotSizeFilter"]["qtyStep"]
+    minOrderQty = instruments["result"]["list"][0]["lotSizeFilter"]["minOrderQty"]
+    maxOrderQty = instruments["result"]["list"][0]["lotSizeFilter"]["maxOrderQty"]
+
+    if qtyStep == "0.001":
+        precision = 3
+    if qtyStep == "0.01":
+        precision = 2
+    if qtyStep == "0.1":
+        precision = 1
+    if qtyStep == "1":
+        precision = 0
+    if qtyStep == "10":
+        precision = -1 
+    if qtyStep == "100":
+        precision = -2
+    if qtyStep == "1000":
+        precision = -3
+
     actual_leverage = data.leverage
-    dactual_leverage = decimal.Decimal(actual_leverage)
 
     print("actual_leverage")
     print(actual_leverage)
 
     dentry = decimal.Decimal(data.entry)
     dwinrate = decimal.Decimal(data.winrate)
-    dtp1 = decimal.Decimal(data.tp1.value)
-    dtp2 = decimal.Decimal(data.tp2.value)
 
     dbeTargetTrigger = int(data.beTargetTrigger) - 1
     dmin_winrate = decimal.Decimal(data.min_winrate)
-    dmin_order = decimal.Decimal(data.min_order)
-    dmax_order = decimal.Decimal(data.max_order) if data.max_order is not None else 0
+    dmin_order = decimal.Decimal(minOrderQty)
+    dmax_order = decimal.Decimal(maxOrderQty) if maxOrderQty is not None else 0
 
     dstop = decimal.Decimal(data.stop)
-    distance = (dentry * 100 / dstop if data.side == "LONG" else dstop * 100 / dentry) - 100
     drisk = decimal.Decimal(data.risk)
     risk = (drisk if drisk < 1 else 1) / 100
     order_distance = dentry - dstop if data.side == "LONG" else dstop - dentry
@@ -150,14 +163,14 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
 
     
     print("market order qty:")
-    print(round(float(dorder_qty), int(data.precision)))
+    print(round(float(dorder_qty), int(precision)))
     # Place market order
     resp = session.place_order(
         category='linear',
         symbol=symbol,
         side='Buy' if data.side == "LONG" else 'Sell',
         orderType='Market',
-        qty=round(float(dorder_qty), int(data.precision)),
+        qty=round(float(dorder_qty), int(precision)),
         stopLoss=data.stop,
         slTriggerBy='MarkPrice',
         positionIdx=0
@@ -174,13 +187,13 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             continue
         
         print("limit market order qty:")
-        print(round(float(dorder_qty*qty_factor), int(data.precision)))
+        print(round(float(dorder_qty*qty_factor), int(precision)))
         resp = session.place_order(
             category='linear',
             symbol=symbol,
             side='Buy' if data.side == "SHORT" else 'Sell',
             orderType='Limit',
-            qty=round(float(dorder_qty*qty_factor), int(data.precision)),
+            qty=round(float(dorder_qty*qty_factor), int(precision)),
             timeInForce="PostOnly",
             positionIdx=0,
             price=price,
