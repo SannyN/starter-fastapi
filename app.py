@@ -111,6 +111,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(risk)
     print("dmin_order")
     print(dmin_order)
+    print("dmax_order")
+    print(dmax_order)
 
     dorder_qty = (balance * risk) / order_distance
 
