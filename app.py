@@ -65,6 +65,23 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print("Balance")
     print(balance)
 
+    print("data.leverage")
+    print(data.leverage)
+
+    try:
+        resp = session.set_leverage(
+            category=category,
+            symbol=symbol,
+            buyLeverage=str(data.leverage),
+            sellLeverage=str(data.leverage)
+        )
+        print(resp)
+    except RuntimeError as error:
+        print(error)
+        print("Failed - continue set_leverage")
+    except:
+        print("Failed - continue set_leverage")
+
     instruments = session.get_instruments_info(category=category, symbol=symbol)
     print(instruments)
     qtyStep = instruments["result"]["list"][0]["lotSizeFilter"]["qtyStep"]
@@ -85,11 +102,6 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         precision = -2
     if qtyStep == "1000":
         precision = -3
-
-    actual_leverage = data.leverage
-
-    print("actual_leverage")
-    print(actual_leverage)
 
     dentry = decimal.Decimal(data.entry)
     dwinrate = decimal.Decimal(data.winrate)
@@ -150,19 +162,6 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print("Cancel all active orders & positions")
     Helpers(session).close_position(category=category, symbol=symbol)
 
-    try:
-        resp = session.set_leverage(
-            category=category,
-            symbol=symbol,
-            buyLeverage=str(actual_leverage),
-            sellLeverage=str(actual_leverage)
-        )
-        print(resp)
-    except RuntimeError as error:
-        print(error)
-        print("Failed - continue set_leverage")
-    except:
-        print("Failed - continue set_leverage")
 
     
     print("market order qty:")
