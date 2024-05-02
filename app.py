@@ -66,6 +66,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(balance)
 
     instruments = session.get_instruments_info(category=category, symbol=symbol)
+    print(instruments)
     qtyStep = instruments["result"]["list"][0]["lotSizeFilter"]["qtyStep"]
     minOrderQty = instruments["result"]["list"][0]["lotSizeFilter"]["minOrderQty"]
     maxOrderQty = instruments["result"]["list"][0]["lotSizeFilter"]["maxOrderQty"]
