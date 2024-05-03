@@ -186,7 +186,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         qty=round(float(dorder_qty), int(precision)),
         stopLoss=data.stop,
         slTriggerBy='MarkPrice',
-        positionIdx=0
+        #positionIdx=0
     )
 
     # Place limit orders
