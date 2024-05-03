@@ -51,8 +51,9 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     symbol = data.ticker.replace(".P", "")
     # Get account balance
     
-    walletBalance = session.get_coins_balance(
-                        accountType="CONTRACT"
+    walletBalance = session.get_wallet_balance(
+                        accountType="CONTRACT",
+                        coin="USDT"
                     )
     print(walletBalance)
     if walletBalance["retMsg"] == "OK":
