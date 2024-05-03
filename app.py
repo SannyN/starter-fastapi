@@ -89,9 +89,9 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
                 mode=0))
     except RuntimeError as error:
         print(error)
-        print("Failed - continue set_leverage")
+        print("Failed - continue switch_position_mode")
     except:
-        print("Failed - continue set_leverage")
+        print("Failed - continue switch_position_mode")
 
     instruments = session.get_instruments_info(category=category, symbol=symbol)
     print(instruments)
