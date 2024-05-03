@@ -53,8 +53,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     
     walletBalance = session.get_coins_balance(
                         accountType="UNIFIED",
-                        coin="USDT",
-                        memberId=os.environ["memberId"]
+                        coin="USDT"
                     )
     print(walletBalance)
     if walletBalance["retMsg"] == "OK":
