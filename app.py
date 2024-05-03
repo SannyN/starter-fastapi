@@ -138,7 +138,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print("dmax_order")
     print(dmax_order)
 
-    dorder_qty = (balance * risk) / order_distance
+    dorder_qty = (balance * decimal.Decimal(risk)) / order_distance
 
     if dorder_qty < dmin_order:
         dorder_qty = dmin_order
