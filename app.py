@@ -51,13 +51,14 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     symbol = data.ticker.replace(".P", "")
     # Get account balance
     
-    walletBalance = session.get_wallet_balance(
+    walletBalance = session.get_coins_balance(
                         accountType="UNIFIED",
                         coin="USDT",
+                        memberId=os.environ["memberId"]
                     )
     print(walletBalance)
     if walletBalance["retMsg"] == "OK":
-        balance = decimal.Decimal(walletBalance["result"]["list"][0]["coin"][0]["walletBalance"])
+        balance = decimal.Decimal(walletBalance["result"]["balance"][0]["walletBalance"])
     else:
         print("Failed to get account info")
         return {"message": "Failed to get account info"}
