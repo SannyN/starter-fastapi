@@ -86,7 +86,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(instruments)
     qtyStep = instruments["result"]["list"][0]["lotSizeFilter"]["qtyStep"]
     minOrderQty = instruments["result"]["list"][0]["lotSizeFilter"]["minOrderQty"]
-    maxOrderQty = instruments["result"]["list"][0]["lotSizeFilter"]["maxOrderQty"]
+    maxOrderQty = instruments["result"]["list"][0]["lotSizeFilter"]["maxMktOrderQty"]
 
     if qtyStep == "0.001":
         precision = 3
