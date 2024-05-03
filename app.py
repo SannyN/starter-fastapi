@@ -82,6 +82,17 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     except:
         print("Failed - continue set_leverage")
 
+    try:        
+        print(session.switch_position_mode(
+                category=category,
+                symbol=symbole,
+                mode=0))
+    except RuntimeError as error:
+        print(error)
+        print("Failed - continue set_leverage")
+    except:
+        print("Failed - continue set_leverage")
+
     instruments = session.get_instruments_info(category=category, symbol=symbol)
     print(instruments)
     qtyStep = instruments["result"]["list"][0]["lotSizeFilter"]["qtyStep"]
