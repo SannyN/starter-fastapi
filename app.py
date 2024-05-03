@@ -179,14 +179,14 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(round(float(dorder_qty), int(precision)))
     # Place market order
     resp = session.place_order(
-        category='linear',
+        category=category,
         symbol=symbol,
         side='Buy' if data.side == "LONG" else 'Sell',
         orderType='Market',
         qty=round(float(dorder_qty), int(precision)),
         stopLoss=data.stop,
         slTriggerBy='MarkPrice',
-        #positionIdx=0
+        positionIdx=0
     )
 
     # Place limit orders
@@ -202,7 +202,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print("limit market order qty:")
         print(round(float(dorder_qty*qty_factor), int(precision)))
         resp = session.place_order(
-            category='linear',
+            category=category,
             symbol=symbol,
             side='Buy' if data.side == "SHORT" else 'Sell',
             orderType='Limit',
