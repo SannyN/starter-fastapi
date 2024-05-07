@@ -4,6 +4,6 @@
       "builder": "NIXPACKS"
     },
     "deploy": {
-      "startCommand": "hypercorn server:app --bind \"[::]:80\""
+      "startCommand": "uvicorn server:app --bind \"[::]:80\""
     }
   }
