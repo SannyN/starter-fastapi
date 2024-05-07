@@ -28,3 +28,4 @@ websockets==11.0.3
 requests>=2.22.0
 websocket-client==1.5.0
 pycryptodome==3.19.0
+hypercorn==0.14.4
