@@ -10,6 +10,7 @@ import base64
 import json
 import logging
 import requests
+from typing import Dict
 
 from datetime import datetime as dt
 
@@ -69,12 +70,12 @@ class _V5HTTPManager:
     timeout: int = field(default=10)
     recv_window: bool = field(default=5000)
     force_retry: bool = field(default=False)
-    retry_codes: defaultdict[dict] = field(
-        default_factory=dict,
+    retry_codes: defaultdict[Dict] = field(
+        default_factory=Dict,
         init=False,
     )
     ignore_codes: dict = field(
-        default_factory=dict,
+        default_factory=Dict,
         init=False,
     )
     max_retries: bool = field(default=3)
