@@ -40,9 +40,6 @@ class WebhookData(BaseModel):
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-@app.get("/")
-async def home():
-    return "Hello there"
 @app.post("/webhook")
 async def webhook(data: WebhookData, secret: str = Query(None)):
     if os.environ["client_secret"] != secret:
@@ -53,9 +50,14 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     # BTCUSDT.P
     symbol = data.ticker.replace(".P", "")
     # Get account balance
+
+    wallet_type = "UNIFIED"
+
+    if os.environ["testnet"] == "false":
+        wallet_type = "CONTRACT"
     
     walletBalance = session.get_wallet_balance(
-                        accountType="CONTRACT",
+                        accountType=wallet_type,
                         coin="USDT"
                     )
     print(walletBalance)
