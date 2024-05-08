@@ -52,7 +52,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     # Get account balance
     
     walletBalance = session.get_wallet_balance(
-                        accountType="CONTRACT",
+                        accountType="CONTRACT" if os.environ["testnet"] == "false" else "UNIFIED",
                         coin="USDT"
                     )
     print(walletBalance)
