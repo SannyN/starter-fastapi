@@ -50,9 +50,14 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     # BTCUSDT.P
     symbol = data.ticker.replace(".P", "")
     # Get account balance
+
+    wallet_type = "UNIFIED"
+
+    if os.environ["testnet"] != "true":
+        wallet_type = "CONTRACT"
     
     walletBalance = session.get_wallet_balance(
-                        accountType="CONTRACT" if os.environ["testnet"] == "false" else "UNIFIED",
+                        accountType=wallet_type,
                         coin="USDT"
                     )
     print(walletBalance)
