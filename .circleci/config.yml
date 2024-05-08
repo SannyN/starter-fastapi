@@ -11,11 +11,6 @@ jobs:
     steps:
       - checkout
       - python/install-packages
-      - run:
-          name: Run tests
-          command: pytest --junitxml=junit.xml || ((($? == 5)) && echo 'Did not find any tests to run.')
-      - store_test_results:
-          path: junit.xml
   deploy:
     # This is an example deploy job, not actually used by the workflow
     docker:
