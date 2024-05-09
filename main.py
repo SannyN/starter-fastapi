@@ -56,9 +56,9 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         print(session.set_trading_stop(
             category=category,
             symbol=symbol,
+            stopLos=data.betargetStoplos
             positionIdx=0,
-            tpslMode="Full",
-            slOrderType=data.betargetStoplos
+            tpslMode="Full"
         ))
 
     # Get account balance
