@@ -22,21 +22,23 @@ class TakeProfit(BaseModel):
     percentage: str
 
 class WebhookData(BaseModel):
-    ticker: str
-    side: str
-    min_winrate: str
-    entry: str
-    leverage: str
-    tp1: TakeProfit
-    tp2: TakeProfit
-    tp3: TakeProfit
-    tp4: TakeProfit
-    winrate: str
-    strategy: str
-    beTargetTrigger: str
-    stop: str
-    risk: str
-    test: bool | None
+    ticker: str | None
+    side: str | None
+    min_winrate: str | None
+    entry: str | None
+    leverage: str | None
+    tp1: TakeProfit | None
+    tp2: TakeProfit | None
+    tp3: TakeProfit | None
+    tp4: TakeProfit | None
+    winrate: str | None
+    strategy: str | None
+    beTargetTrigger: str | None
+    stop: str | None
+    risk: str | None
+    betargetHit: bool | None
+    betargetStoplos: str | None
+
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
@@ -49,6 +51,16 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print(data)
     # BTCUSDT.P
     symbol = data.ticker.replace(".P", "")
+
+    if data.betargetHit:
+        print(session.set_trading_stop(
+            category=category,
+            symbol=symbol,
+            positionIdx=0,
+            tpslMode="Full",
+            slOrderType=data.betargetStoplos
+        ))
+
     # Get account balance
 
     wallet_type = "UNIFIED"
