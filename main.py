@@ -160,20 +160,8 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     print("dorder_qty")
     print(dorder_qty)
 
-    trailingActivationPrices = [data.tp1.value, data.tp2.value, data.tp3.value, data.tp4.value]
-    activationPrice = decimal.Decimal(trailingActivationPrices[dbeTargetTrigger])
-
-    print("activationPrice")
-    print(activationPrice)
+    print("dorder_qty")
     print(dbeTargetTrigger)
-
-    withTrailing = data.beTargetTrigger != "WITHOUT"
-
-    if withTrailing:
-        if data.side == "LONG":
-            trailing = activationPrice - dentry
-        else:
-            trailing =  dentry - activationPrice
 
     if dwinrate < dmin_winrate:
         print("Winrate low")
@@ -225,16 +213,4 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
         )
         print(resp)
         
-    if withTrailing:
-        print("with trailing:")
-        print(trailing)
-        resp = session.set_trading_stop(
-            category=category,
-            symbol=symbol,
-            trailingStop=str(trailing),
-            activePrice=str(activationPrice),
-            positionIdx=0
-        )
-        print(resp)
-
     return {"nice"}
