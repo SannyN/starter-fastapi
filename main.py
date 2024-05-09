@@ -53,7 +53,7 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
     symbol = data.ticker.replace(".P", "")
 
     if data.betargetHit:
-        print(session.set_trading_stop(category=category, symbol=symbol, stopLos=data.betargetStoplos, positionIdx=0, tpslMode="Full"))
+        print(session.set_trading_stop(category=category, symbol=symbol, stopLoss=data.betargetStoplos, positionIdx=0, tpslMode="Full"))
 
     # Get account balance
 
@@ -212,5 +212,5 @@ async def webhook(data: WebhookData, secret: str = Query(None)):
             reduceOnly=True
         )
         print(resp)
-        
+
     return {"nice"}
